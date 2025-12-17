@@ -1,30 +1,39 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Orchestrator } from '../../../core/index.js';
 import type { AgentState } from '../../../events/types.js';
 import type { ToolCall, ToolState } from '../../../tools/types.js';
 
-interface ToolStatus {
+interface ToolBlock {
+  type: 'tool';
+  id: string;
   call: ToolCall;
   state: ToolState;
   result?: string;
   error?: string;
 }
 
+interface TextBlock {
+  type: 'text';
+  id: string;
+  content: string;
+}
+
+type ContentBlock = ToolBlock | TextBlock;
+
 interface UseAgentReturn {
   state: AgentState;
-  output: string;
-  tools: ToolStatus[];
+  content: ContentBlock[];
   isThinking: boolean;
   submit: (message: string) => void;
   interrupt: () => void;
-  clearOutput: () => void;
+  clear: () => void;
 }
 
 export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
   const [state, setState] = useState<AgentState>('idle');
-  const [output, setOutput] = useState('');
+  const [content, setContent] = useState<ContentBlock[]>([]);
   const [isThinking, setIsThinking] = useState(false);
-  const [toolStatuses, setToolStatuses] = useState<Map<string, ToolStatus>>(new Map());
+  const [currentTextId, setCurrentTextId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribers: (() => void)[] = [];
@@ -33,8 +42,8 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
       orchestrator.events.on('state_change', (event) => {
         setState(event.state);
         if (event.state === 'idle') {
-          setToolStatuses(new Map());
           setIsThinking(false);
+          setCurrentTextId(null);
         }
         if (event.state === 'running') {
           setIsThinking(true);
@@ -44,45 +53,60 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
 
     unsubscribers.push(
       orchestrator.events.on('text_delta', (event) => {
-        setOutput(prev => prev + event.text);
         setIsThinking(false);
+        setContent(prev => {
+          // Find or create current text block
+          const lastBlock = prev[prev.length - 1];
+          if (lastBlock?.type === 'text') {
+            // Append to existing text block
+            return prev.map((block, i) =>
+              i === prev.length - 1 && block.type === 'text'
+                ? { ...block, content: block.content + event.text }
+                : block
+            );
+          } else {
+            // Create new text block
+            const newId = `text-${Date.now()}`;
+            setCurrentTextId(newId);
+            return [...prev, { type: 'text', id: newId, content: event.text }];
+          }
+        });
       })
     );
 
     unsubscribers.push(
       orchestrator.events.on('tool_start', (event) => {
         setIsThinking(false);
-        setToolStatuses(prev => {
-          const next = new Map(prev);
-          next.set(event.toolId, {
+        setCurrentTextId(null); // End current text block
+        setContent(prev => [
+          ...prev,
+          {
+            type: 'tool',
+            id: event.toolId,
             call: {
               id: event.toolId,
               name: event.toolName,
               input: event.input
             },
             state: 'running'
-          });
-          return next;
-        });
+          }
+        ]);
       })
     );
 
     unsubscribers.push(
       orchestrator.events.on('tool_end', (event) => {
         setIsThinking(true);
-        setToolStatuses(prev => {
-          const next = new Map(prev);
-          const existing = next.get(event.toolId);
-          if (existing) {
-            next.set(event.toolId, {
-              ...existing,
-              state: event.error ? 'error' : 'success',
-              result: event.error ? undefined : String(event.result),
-              error: event.error?.message
-            });
-          }
-          return next;
-        });
+        setContent(prev => prev.map(block =>
+          block.type === 'tool' && block.id === event.toolId
+            ? {
+                ...block,
+                state: event.error ? 'error' : 'success',
+                result: event.error ? undefined : String(event.result),
+                error: event.error?.message
+              }
+            : block
+        ));
       })
     );
 
@@ -92,7 +116,8 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
   }, [orchestrator]);
 
   const submit = useCallback((message: string) => {
-    setOutput('');
+    setContent([]);
+    setCurrentTextId(null);
     setIsThinking(true);
     orchestrator.submit(message);
   }, [orchestrator]);
@@ -102,14 +127,12 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
     setIsThinking(false);
   }, [orchestrator]);
 
-  const clearOutput = useCallback(() => {
-    setOutput('');
+  const clear = useCallback(() => {
+    setContent([]);
+    setCurrentTextId(null);
   }, []);
 
-  const tools = useMemo(() =>
-    Array.from(toolStatuses.values()),
-    [toolStatuses]
-  );
-
-  return { state, output, tools, isThinking, submit, interrupt, clearOutput };
+  return { state, content, isThinking, submit, interrupt, clear };
 }
+
+export type { ContentBlock, ToolBlock, TextBlock };
