@@ -79,10 +79,10 @@ export const ToolStatus: React.FC<ToolStatusProps> = ({
         <Text color="gray">(</Text>
         <Text color="gray" dimColor>{args}</Text>
         <Text color="gray">)</Text>
-        {duration && (
+        {duration != null && duration > 0 && (
           <Text color="gray" dimColor> · {formatDuration(duration)}</Text>
         )}
-        {hasOutput && resultDisplay?.truncated && (
+        {hasOutput && resultDisplay?.truncated && result!.split('\n').length > 3 && (
           <Text color="gray" dimColor> [+{result!.split('\n').length - 3} lines]</Text>
         )}
       </Box>
