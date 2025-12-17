@@ -1,6 +1,6 @@
-export { ErrorDisplay } from './ErrorDisplay.js';
-export { StatusBar } from './StatusBar.js';
-export { ToolStatus } from './ToolStatus.js';
-export { AgentOutput } from './AgentOutput.js';
-export { InputPrompt } from './InputPrompt.js';
-export { ThinkingIndicator } from './ThinkingIndicator.js';
+export { ErrorDisplay } from './errorDisplay.js';
+export { StatusBar } from './statusBar.js';
+export { ToolStatus } from './toolStatus.js';
+export { AgentOutput } from './agentOutput.js';
+export { InputPrompt } from './inputPrompt.js';
+export { ThinkingIndicator } from './thinkingIndicator.js';

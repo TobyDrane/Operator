@@ -1,8 +1,14 @@
+/**
+ * @file orchestrator.ts
+ * @description Main agent loop that coordinates LLM calls, tool execution,
+ * and event emission. Manages the conversation flow and handles interrupts.
+ */
+
 import { TypedEventEmitter } from '../events/index.js';
 import { MessageHistory } from '../conversation/index.js';
 import { ToolRegistry, builtinTools } from '../tools/index.js';
 import { AnthropicClient } from '../llm/index.js';
-import { Session } from './Session.js';
+import { Session } from './session.js';
 import type { AgentConfig } from './types.js';
 import type { AgentState, AgentError } from '../events/types.js';
 import type { ContentBlock } from '../conversation/types.js';

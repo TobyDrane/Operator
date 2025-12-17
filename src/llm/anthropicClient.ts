@@ -1,3 +1,9 @@
+/**
+ * @file anthropicClient.ts
+ * @description Wrapper for Anthropic SDK with streaming support. Handles message
+ * streaming, tool use detection, and token usage tracking.
+ */
+
 import Anthropic from '@anthropic-ai/sdk';
 import type { Message, ContentBlock } from '../conversation/types.js';
 import type { ToolDefinition } from '../tools/types.js';
