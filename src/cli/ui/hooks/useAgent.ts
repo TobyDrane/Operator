@@ -9,6 +9,8 @@ interface ToolBlock {
   state: ToolState;
   result?: string;
   error?: string;
+  startTime?: number;
+  duration?: number;
 }
 
 interface TextBlock {
@@ -93,7 +95,8 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
               name: event.toolName,
               input: event.input
             },
-            state: 'running'
+            state: 'running',
+            startTime: event.startTime
           }
         ]);
       })
@@ -108,7 +111,8 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
                 ...block,
                 state: event.error ? 'error' : 'success',
                 result: event.error ? undefined : String(event.result),
-                error: event.error?.message
+                error: event.error?.message,
+                duration: event.duration
               }
             : block
         ));

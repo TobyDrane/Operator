@@ -38,6 +38,7 @@ const ContentBlockView: React.FC<{ block: ContentBlock }> = ({ block }) => {
           status={block.state}
           result={block.result}
           error={block.error}
+          duration={block.duration}
         />
       </Box>
     );

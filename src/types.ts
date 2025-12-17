@@ -19,6 +19,7 @@ export interface ToolStartEvent {
   toolName: string;
   toolId: string;
   input: Record<string, unknown>;
+  startTime: number;
 }
 
 export interface ToolEndEvent {
@@ -26,6 +27,7 @@ export interface ToolEndEvent {
   toolId: string;
   result: unknown;
   error?: Error;
+  duration?: number;
 }
 
 export interface StateChangeEvent {
@@ -42,6 +44,8 @@ export interface TokenUsageEvent {
   type: 'token_usage';
   inputTokens: number;
   outputTokens: number;
+  totalInputTokens: number;
+  totalOutputTokens: number;
 }
 
 export interface ThinkingEvent {
