@@ -5,9 +5,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import type { Message, ContentBlock } from '../conversation/types.js';
-import type { ToolDefinition } from '../tools/types.js';
-import type { LLMResponse, StreamCallbacks } from './types.js';
+import type { Message, ContentBlock, ToolDefinition, LLMResponse, StreamCallbacks } from '../types.js';
 
 export interface ClientConfig {
   model: string;

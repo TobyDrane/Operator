@@ -4,7 +4,7 @@
  */
 
 import { writeFile } from 'fs/promises';
-import type { ToolDefinition, ToolExecutor } from '../types.js';
+import type { ToolDefinition, ToolExecutor } from '../../types.js';
 
 export const writeFileTool: ToolDefinition = {
   name: 'write_file',

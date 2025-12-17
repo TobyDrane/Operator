@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Orchestrator } from '../../../core/index.js';
-import type { AgentState } from '../../../events/types.js';
-import type { ToolCall, ToolState } from '../../../tools/types.js';
+import type { AgentState, ToolCall, ToolState } from '../../../types.js';
 
 interface ToolBlock {
   type: 'tool';

@@ -2,7 +2,7 @@ import { render } from 'ink';
 import React from 'react';
 import { App } from './ui/app.js';
 import { Orchestrator } from '../core/index.js';
-import type { AgentConfig } from '../core/types.js';
+import type { AgentConfig } from '../types.js';
 
 interface CLIOptions {
   model?: string;

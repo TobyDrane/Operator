@@ -5,7 +5,7 @@
 
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import type { ToolDefinition, ToolExecutor } from '../types.js';
+import type { ToolDefinition, ToolExecutor } from '../../types.js';
 
 const execAsync = promisify(exec);
 

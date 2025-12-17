@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import type { TypedEventEmitter } from '../../../events/index.js';
-import type { AgentEvent, EventType } from '../../../events/types.js';
+import type { AgentEvent, EventType } from '../../../types.js';
 
 export function useEvents<K extends EventType>(
   emitter: TypedEventEmitter,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
-import type { ToolCall, ToolState } from '../../../tools/types.js';
+import type { ToolCall, ToolState } from '../../../types.js';
 
 interface ToolStatusProps {
   toolCall: ToolCall;

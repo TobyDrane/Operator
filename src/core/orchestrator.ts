@@ -9,9 +9,7 @@ import { MessageHistory } from '../conversation/index.js';
 import { ToolRegistry, builtinTools } from '../tools/index.js';
 import { AnthropicClient } from '../llm/index.js';
 import { Session } from './session.js';
-import type { AgentConfig } from './types.js';
-import type { AgentState, AgentError } from '../events/types.js';
-import type { ContentBlock } from '../conversation/types.js';
+import type { AgentConfig, AgentState, AgentError, ContentBlock } from '../types.js';
 
 export class Orchestrator {
   readonly events: TypedEventEmitter;

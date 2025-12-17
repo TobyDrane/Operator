@@ -10,7 +10,7 @@ import { StatusBar } from './components/statusBar.js';
 import { ErrorDisplay } from './components/errorDisplay.js';
 import { ThinkingIndicator } from './components/thinkingIndicator.js';
 import type { Orchestrator } from '../../core/index.js';
-import type { AgentError } from '../../events/types.js';
+import type { AgentError } from '../../types.js';
 
 interface AppProps {
   orchestrator: Orchestrator;

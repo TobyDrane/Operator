@@ -4,7 +4,7 @@
  * event handling for agent state changes, tool execution, and token usage tracking.
  */
 
-import type { AgentEvent, EventType, EventHandler } from './types.js';
+import type { AgentEvent, EventType, EventHandler } from '../types.js';
 
 export class TypedEventEmitter {
   private listeners: Map<EventType, Set<EventHandler<AgentEvent>>> = new Map();

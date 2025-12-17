@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import type { SessionInfo } from '../../../core/types.js';
-import type { AgentState } from '../../../events/types.js';
+import type { SessionInfo, AgentState } from '../../../types.js';
 
 interface StatusBarProps {
   session: SessionInfo;
