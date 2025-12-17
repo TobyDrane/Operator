@@ -1,6 +1,5 @@
 Project Structure (with Ink)
 
-agent/
 ├── package.json
 ├── tsconfig.json
 ├── src/
