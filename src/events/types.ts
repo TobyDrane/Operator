@@ -37,13 +37,19 @@ export interface TokenUsageEvent {
   outputTokens: number;
 }
 
+export interface ThinkingEvent {
+  type: 'thinking';
+  text: string;
+}
+
 export type AgentEvent =
   | TextDeltaEvent
   | ToolStartEvent
   | ToolEndEvent
   | StateChangeEvent
   | ErrorEvent
-  | TokenUsageEvent;
+  | TokenUsageEvent
+  | ThinkingEvent;
 
 export type EventType = AgentEvent['type'];
 

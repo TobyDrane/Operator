@@ -6,14 +6,15 @@ import type { ToolCall, ToolState } from '../../../tools/types.js';
 interface ToolStatus {
   call: ToolCall;
   state: ToolState;
-  result?: unknown;
-  error?: Error;
+  result?: string;
+  error?: string;
 }
 
 interface UseAgentReturn {
   state: AgentState;
   output: string;
   tools: ToolStatus[];
+  isThinking: boolean;
   submit: (message: string) => void;
   interrupt: () => void;
   clearOutput: () => void;
@@ -22,6 +23,7 @@ interface UseAgentReturn {
 export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
   const [state, setState] = useState<AgentState>('idle');
   const [output, setOutput] = useState('');
+  const [isThinking, setIsThinking] = useState(false);
   const [toolStatuses, setToolStatuses] = useState<Map<string, ToolStatus>>(new Map());
 
   useEffect(() => {
@@ -32,6 +34,10 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
         setState(event.state);
         if (event.state === 'idle') {
           setToolStatuses(new Map());
+          setIsThinking(false);
+        }
+        if (event.state === 'running') {
+          setIsThinking(true);
         }
       })
     );
@@ -39,11 +45,13 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
     unsubscribers.push(
       orchestrator.events.on('text_delta', (event) => {
         setOutput(prev => prev + event.text);
+        setIsThinking(false);
       })
     );
 
     unsubscribers.push(
       orchestrator.events.on('tool_start', (event) => {
+        setIsThinking(false);
         setToolStatuses(prev => {
           const next = new Map(prev);
           next.set(event.toolId, {
@@ -61,6 +69,7 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
 
     unsubscribers.push(
       orchestrator.events.on('tool_end', (event) => {
+        setIsThinking(true);
         setToolStatuses(prev => {
           const next = new Map(prev);
           const existing = next.get(event.toolId);
@@ -68,8 +77,8 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
             next.set(event.toolId, {
               ...existing,
               state: event.error ? 'error' : 'success',
-              result: event.result,
-              error: event.error
+              result: event.error ? undefined : String(event.result),
+              error: event.error?.message
             });
           }
           return next;
@@ -84,11 +93,13 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
 
   const submit = useCallback((message: string) => {
     setOutput('');
+    setIsThinking(true);
     orchestrator.submit(message);
   }, [orchestrator]);
 
   const interrupt = useCallback(() => {
     orchestrator.interrupt();
+    setIsThinking(false);
   }, [orchestrator]);
 
   const clearOutput = useCallback(() => {
@@ -100,5 +111,5 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
     [toolStatuses]
   );
 
-  return { state, output, tools, submit, interrupt, clearOutput };
+  return { state, output, tools, isThinking, submit, interrupt, clearOutput };
 }
