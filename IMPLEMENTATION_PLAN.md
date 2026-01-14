@@ -7,7 +7,6 @@ Bootstrap a CLI agent built with **Ink** (React for terminals) that interfaces w
 ## Directory Structure
 
 ```
-agent/
 ├── package.json
 ├── tsconfig.json
 └── src/
@@ -38,8 +37,8 @@ agent/
 ### Phase 1: Project Foundation
 | File | Description |
 |------|-------------|
-| `agent/package.json` | Dependencies: ink, react, chalk, @anthropic-ai/sdk |
-| `agent/tsconfig.json` | TypeScript config with JSX support |
+| `package.json` | Dependencies: ink, react, chalk, @anthropic-ai/sdk |
+| `tsconfig.json` | TypeScript config with JSX support |
 
 ### Phase 2: Events System
 | File | Description |
@@ -135,6 +134,6 @@ gt sync                                 # Pull trunk, restack
 ## Post-Bootstrap
 
 After initial scaffolding:
-1. Run `npm install` in `agent/`
+1. Run `npm install`
 2. Run `npm run build` to compile TypeScript
 3. Run `npm start` to launch the CLI
