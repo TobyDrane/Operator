@@ -1,3 +1,9 @@
+/**
+ * @file messageHistory.ts
+ * @description Manages conversation history with the LLM. Stores user messages,
+ * assistant responses, and tool results with automatic trimming to prevent context overflow.
+ */
+
 import type { Message, ContentBlock } from './types.js';
 
 export class MessageHistory {

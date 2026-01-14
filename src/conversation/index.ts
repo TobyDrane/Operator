@@ -1,2 +1,2 @@
 export * from './types.js';
-export { MessageHistory } from './MessageHistory.js';
+export { MessageHistory } from './messageHistory.js';

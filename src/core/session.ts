@@ -1,3 +1,9 @@
+/**
+ * @file session.ts
+ * @description Session state and token usage tracking. Maintains cumulative token
+ * counts and configuration for the duration of an agent session.
+ */
+
 import type { SessionInfo, AgentConfig } from './types.js';
 
 export class Session {

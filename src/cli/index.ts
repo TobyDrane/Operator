@@ -1,6 +1,6 @@
 import { render } from 'ink';
 import React from 'react';
-import { App } from './ui/App.js';
+import { App } from './ui/app.js';
 import { Orchestrator } from '../core/index.js';
 import type { AgentConfig } from '../core/types.js';
 

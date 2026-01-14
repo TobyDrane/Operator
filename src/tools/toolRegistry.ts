@@ -1,3 +1,9 @@
+/**
+ * @file toolRegistry.ts
+ * @description Registry for tool definitions and executors. Manages the collection
+ * of available tools that the agent can invoke during conversation.
+ */
+
 import type { ToolDefinition, ToolExecutor } from './types.js';
 
 interface RegisteredTool {

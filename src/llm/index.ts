@@ -1,3 +1,3 @@
 export * from './types.js';
-export { AnthropicClient } from './AnthropicClient.js';
-export type { ClientConfig } from './AnthropicClient.js';
+export { AnthropicClient } from './anthropicClient.js';
+export type { ClientConfig } from './anthropicClient.js';

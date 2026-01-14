@@ -3,12 +3,12 @@ import { Box, Text, useApp, useInput } from 'ink';
 import { useAgent } from './hooks/useAgent.js';
 import type { ContentBlock } from './hooks/useAgent.js';
 import { useLatestEvent } from './hooks/useEvents.js';
-import { AgentOutput } from './components/AgentOutput.js';
-import { ToolStatus } from './components/ToolStatus.js';
-import { InputPrompt } from './components/InputPrompt.js';
-import { StatusBar } from './components/StatusBar.js';
-import { ErrorDisplay } from './components/ErrorDisplay.js';
-import { ThinkingIndicator } from './components/ThinkingIndicator.js';
+import { AgentOutput } from './components/agentOutput.js';
+import { ToolStatus } from './components/toolStatus.js';
+import { InputPrompt } from './components/inputPrompt.js';
+import { StatusBar } from './components/statusBar.js';
+import { ErrorDisplay } from './components/errorDisplay.js';
+import { ThinkingIndicator } from './components/thinkingIndicator.js';
 import type { Orchestrator } from '../../core/index.js';
 import type { AgentError } from '../../events/types.js';
 

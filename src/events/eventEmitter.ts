@@ -1,3 +1,9 @@
+/**
+ * @file eventEmitter.ts
+ * @description Typed event emitter for agent communication. Provides type-safe
+ * event handling for agent state changes, tool execution, and token usage tracking.
+ */
+
 import type { AgentEvent, EventType, EventHandler } from './types.js';
 
 export class TypedEventEmitter {
