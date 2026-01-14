@@ -1,3 +1,8 @@
+/**
+ * @file toolStatus.tsx
+ * @description Compact tool status display with timing
+ */
+
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
@@ -8,57 +13,88 @@ interface ToolStatusProps {
   status: ToolState;
   result?: string;
   error?: string;
+  duration?: number;
 }
 
-const statusColors: Record<ToolState, string> = {
-  pending: 'gray',
-  running: 'yellow',
-  success: 'green',
-  error: 'red'
-};
+function formatArgs(input: Record<string, unknown>): string {
+  const entries = Object.entries(input);
+  if (entries.length === 0) return '';
 
-export const ToolStatus: React.FC<ToolStatusProps> = ({ toolCall, status, result, error }) => {
+  return entries.map(([key, value]) => {
+    const strValue = typeof value === 'string'
+      ? `"${value.length > 30 ? value.slice(0, 27) + '...' : value}"`
+      : JSON.stringify(value);
+    return `${key}: ${strValue.length > 40 ? strValue.slice(0, 37) + '...' : strValue}`;
+  }).join(', ');
+}
+
+function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
+}
+
+function truncateResult(result: string, maxLines: number = 3): { text: string; truncated: boolean } {
+  const lines = result.split('\n');
+  if (lines.length <= maxLines) {
+    return { text: result, truncated: false };
+  }
+  return {
+    text: lines.slice(0, maxLines).join('\n'),
+    truncated: true
+  };
+}
+
+export const ToolStatus: React.FC<ToolStatusProps> = ({
+  toolCall,
+  status,
+  result,
+  error,
+  duration
+}) => {
   const [expanded, setExpanded] = useState(false);
 
-  const inputStr = JSON.stringify(toolCall.input, null, 2);
+  const statusIcon = status === 'running'
+    ? <Spinner type="dots" />
+    : status === 'success' ? '✓'
+    : status === 'error' ? '✗'
+    : '○';
+
+  const statusColor = status === 'running' ? 'yellow'
+    : status === 'success' ? 'green'
+    : status === 'error' ? 'red'
+    : 'gray';
+
+  const args = formatArgs(toolCall.input);
   const hasOutput = result || error;
+
+  const resultDisplay = result ? truncateResult(result, expanded ? 100 : 3) : null;
 
   return (
     <Box flexDirection="column">
+      {/* Main line: icon tool_name(args) duration */}
       <Box>
-        <Text color={statusColors[status]}>
-          {status === 'running' ? (
-            <Spinner type="dots" />
-          ) : status === 'success' ? (
-            '✓'
-          ) : status === 'error' ? (
-            '✗'
-          ) : (
-            '○'
-          )}
-        </Text>
+        <Text color={statusColor}>{statusIcon}</Text>
         <Text> </Text>
         <Text color="blue" bold>{toolCall.name}</Text>
-        {hasOutput && (
-          <Text color="gray" dimColor> [{expanded ? '▼' : '▶'}]</Text>
+        <Text color="gray">(</Text>
+        <Text color="gray" dimColor>{args}</Text>
+        <Text color="gray">)</Text>
+        {duration && (
+          <Text color="gray" dimColor> · {formatDuration(duration)}</Text>
+        )}
+        {hasOutput && resultDisplay?.truncated && (
+          <Text color="gray" dimColor> [+{result!.split('\n').length - 3} lines]</Text>
         )}
       </Box>
 
-      {/* Show input args */}
-      <Box marginLeft={2}>
-        <Text color="gray" dimColor>
-          {inputStr.length > 100 ? inputStr.slice(0, 100) + '...' : inputStr}
-        </Text>
-      </Box>
-
-      {/* Show result/error when completed */}
+      {/* Result/error output */}
       {hasOutput && (
-        <Box marginLeft={2} marginTop={1} flexDirection="column">
+        <Box marginLeft={2} marginTop={0}>
           {error ? (
             <Text color="red">{error}</Text>
-          ) : result ? (
-            <Text color="gray">
-              {result.length > 200 ? result.slice(0, 200) + '...' : result}
+          ) : resultDisplay ? (
+            <Text color="gray" dimColor wrap="truncate-end">
+              {resultDisplay.text}
             </Text>
           ) : null}
         </Box>

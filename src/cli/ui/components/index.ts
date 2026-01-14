@@ -4,3 +4,4 @@ export { ToolStatus } from './toolStatus.js';
 export { AgentOutput } from './agentOutput.js';
 export { InputPrompt } from './inputPrompt.js';
 export { ThinkingIndicator } from './thinkingIndicator.js';
+export { CodeBlock } from './codeBlock.js';

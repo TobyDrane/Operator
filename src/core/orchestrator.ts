@@ -89,17 +89,20 @@ export class Orchestrator {
             this.events.emit({ type: 'text_delta', text });
           },
           onToolUse: (id: string, name: string, input: Record<string, unknown>) => {
-            this.events.emit({ type: 'tool_start', toolId: id, toolName: name, input });
+            this.events.emit({ type: 'tool_start', toolId: id, toolName: name, input, startTime: Date.now() });
           }
         }
       );
 
       this.history.addAssistantMessage(response.content);
       this.session.addTokenUsage(response.usage.inputTokens, response.usage.outputTokens);
+      const sessionInfo = this.session.getInfo();
       this.events.emit({
         type: 'token_usage',
         inputTokens: response.usage.inputTokens,
-        outputTokens: response.usage.outputTokens
+        outputTokens: response.usage.outputTokens,
+        totalInputTokens: sessionInfo.totalInputTokens,
+        totalOutputTokens: sessionInfo.totalOutputTokens
       });
 
       if (response.stopReason === 'end_turn') {
@@ -116,18 +119,26 @@ export class Orchestrator {
 
   private async executeTools(content: ContentBlock[]): Promise<void> {
     const toolUses = content.filter(c => c.type === 'tool_use');
+    const toolStartTimes = new Map<string, number>();
 
+    // Find start times from previously emitted tool_start events
+    // Note: tool_start is emitted during streaming, so we need to track them
     for (const toolUse of toolUses) {
       if (toolUse.type !== 'tool_use') continue;
 
+      const startTime = Date.now(); // Approximate start time for execution
+      toolStartTimes.set(toolUse.id, startTime);
+
       try {
         const result = await this.tools.execute(toolUse.name, toolUse.input);
+        const duration = Date.now() - startTime;
         this.history.addToolResult(toolUse.id, result, false);
-        this.events.emit({ type: 'tool_end', toolId: toolUse.id, result });
+        this.events.emit({ type: 'tool_end', toolId: toolUse.id, result, duration });
       } catch (error) {
+        const duration = Date.now() - startTime;
         const errorMessage = error instanceof Error ? error.message : String(error);
         this.history.addToolResult(toolUse.id, errorMessage, true);
-        this.events.emit({ type: 'tool_end', toolId: toolUse.id, result: null, error: error as Error });
+        this.events.emit({ type: 'tool_end', toolId: toolUse.id, result: null, error: error as Error, duration });
       }
     }
   }
