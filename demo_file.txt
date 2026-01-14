@@ -1,0 +1,3 @@
+This is a demonstration file.
+Created to show the write_file tool in action.
+Timestamp: The file was created during a tool demo.

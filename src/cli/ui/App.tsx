@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text, useApp, useInput } from 'ink';
 import { useAgent } from './hooks/useAgent.js';
+import type { ContentBlock } from './hooks/useAgent.js';
 import { useLatestEvent } from './hooks/useEvents.js';
 import { AgentOutput } from './components/AgentOutput.js';
 import { ToolStatus } from './components/ToolStatus.js';
@@ -15,9 +16,30 @@ interface AppProps {
   orchestrator: Orchestrator;
 }
 
+const ContentBlockView: React.FC<{ block: ContentBlock }> = ({ block }) => {
+  if (block.type === 'text') {
+    return <AgentOutput text={block.content} />;
+  }
+
+  if (block.type === 'tool') {
+    return (
+      <Box marginY={1}>
+        <ToolStatus
+          toolCall={block.call}
+          status={block.state}
+          result={block.result}
+          error={block.error}
+        />
+      </Box>
+    );
+  }
+
+  return null;
+};
+
 export const App: React.FC<AppProps> = ({ orchestrator }) => {
   const { exit } = useApp();
-  const { state, output, tools, isThinking, submit, interrupt } = useAgent(orchestrator);
+  const { state, content, isThinking, submit, interrupt } = useAgent(orchestrator);
   const [error, setError] = useState<AgentError | null>(null);
 
   const errorEvent = useLatestEvent(orchestrator.events, 'error');
@@ -48,28 +70,13 @@ export const App: React.FC<AppProps> = ({ orchestrator }) => {
       <StatusBar session={sessionInfo} state={state} />
 
       <Box flexDirection="column" paddingX={1} paddingY={1}>
-        {/* Thinking indicator */}
-        <ThinkingIndicator isThinking={isThinking && tools.length === 0 && !output} />
+        {/* Render content blocks in order */}
+        {content.map(block => (
+          <ContentBlockView key={block.id} block={block} />
+        ))}
 
-        {/* Tool executions */}
-        {tools.length > 0 && (
-          <Box flexDirection="column" marginBottom={1}>
-            {tools.map(t => (
-              <Box key={t.call.id} marginBottom={1}>
-                <ToolStatus
-                  toolCall={t.call}
-                  status={t.state}
-                  result={t.result}
-                  error={t.error}
-                />
-              </Box>
-            ))}
-            {isThinking && <ThinkingIndicator isThinking={true} />}
-          </Box>
-        )}
-
-        {/* Agent output */}
-        {output && <AgentOutput text={output} />}
+        {/* Thinking indicator at the end */}
+        {isThinking && <ThinkingIndicator isThinking={true} />}
 
         {/* Error display */}
         {error && (
