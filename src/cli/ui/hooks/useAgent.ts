@@ -18,7 +18,13 @@ interface TextBlock {
   content: string;
 }
 
-type ContentBlock = ToolBlock | TextBlock;
+interface UserMessageBlock {
+  type: 'user';
+  id: string;
+  content: string;
+}
+
+type ContentBlock = ToolBlock | TextBlock | UserMessageBlock;
 
 interface UseAgentReturn {
   state: AgentState;
@@ -116,7 +122,11 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
   }, [orchestrator]);
 
   const submit = useCallback((message: string) => {
-    setContent([]);
+    // Add user message to conversation
+    setContent(prev => [
+      ...prev,
+      { type: 'user', id: `user-${Date.now()}`, content: message }
+    ]);
     setCurrentTextId(null);
     setIsThinking(true);
     orchestrator.submit(message);
@@ -135,4 +145,4 @@ export function useAgent(orchestrator: Orchestrator): UseAgentReturn {
   return { state, content, isThinking, submit, interrupt, clear };
 }
 
-export type { ContentBlock, ToolBlock, TextBlock };
+export type { ContentBlock, ToolBlock, TextBlock, UserMessageBlock };

@@ -17,6 +17,15 @@ interface AppProps {
 }
 
 const ContentBlockView: React.FC<{ block: ContentBlock }> = ({ block }) => {
+  if (block.type === 'user') {
+    return (
+      <Box marginY={1}>
+        <Text color="green" bold>{'> '}</Text>
+        <Text>{block.content}</Text>
+      </Box>
+    );
+  }
+
   if (block.type === 'text') {
     return <AgentOutput text={block.content} />;
   }
