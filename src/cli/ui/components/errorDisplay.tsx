@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import type { AgentError } from '../../../events/types.js';
+import type { AgentError } from '../../../types.js';
 
 interface ErrorDisplayProps {
   error: AgentError;

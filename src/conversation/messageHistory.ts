@@ -4,7 +4,7 @@
  * assistant responses, and tool results with automatic trimming to prevent context overflow.
  */
 
-import type { Message, ContentBlock } from './types.js';
+import type { Message, ContentBlock } from '../types.js';
 
 export class MessageHistory {
   private messages: Message[] = [];

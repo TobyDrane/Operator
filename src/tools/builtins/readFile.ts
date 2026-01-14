@@ -4,7 +4,7 @@
  */
 
 import { readFile } from 'fs/promises';
-import type { ToolDefinition, ToolExecutor } from '../types.js';
+import type { ToolDefinition, ToolExecutor } from '../../types.js';
 
 export const readFileTool: ToolDefinition = {
   name: 'read_file',

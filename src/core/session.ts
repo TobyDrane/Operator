@@ -4,7 +4,7 @@
  * counts and configuration for the duration of an agent session.
  */
 
-import type { SessionInfo, AgentConfig } from './types.js';
+import type { SessionInfo, AgentConfig } from '../types.js';
 
 export class Session {
   private inputTokens: number = 0;
